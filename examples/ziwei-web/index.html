@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="referrer" content="no-referrer" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%238d2f2f'/%3E%3C/svg%3E" />
+    <title>紫微斗数排盘</title>
+  </head>
+  <body>
+    <header class="top">
+      <p class="eyebrow">本地排盘 · 不上传出生信息</p>
+      <h1>紫微斗数排盘</h1>
+      <p class="lead">
+        填入出生日期、性别和时辰，在这台设备的浏览器里生成十二宫命盘。这是传统文化排盘工具，只展示星曜位置，不断言吉凶，也不能代替专业意见。
+      </p>
+    </header>
+    <main class="layout">
+      <section class="panel" aria-labelledby="input-title">
+        <h2 id="input-title">出生资料</h2>
+        <form id="chart-form" novalidate>
+          <fieldset>
+            <legend>用哪种日期</legend>
+            <label><input type="radio" name="calendar" value="solar" checked /> 公历（阳历）</label>
+            <label><input type="radio" name="calendar" value="lunar" /> 农历（阴历）</label>
+          </fieldset>
+
+          <div id="solar-fields">
+            <label for="solar-date">公历生日</label>
+            <input id="solar-date" name="solar-date" type="date" min="0001-01-01" max="9999-12-31" />
+          </div>
+
+          <div id="lunar-fields" hidden>
+            <div class="lunar-grid">
+              <label for="lunar-year">农历年<input id="lunar-year" name="lunar-year" inputmode="numeric" placeholder="例如 2000" /></label>
+              <label for="lunar-month">农历月<select id="lunar-month" name="lunar-month"></select></label>
+              <label for="lunar-day">日期<input id="lunar-day" name="lunar-day" inputmode="numeric" placeholder="1–30" /></label>
+            </div>
+            <label class="check"><input id="lunar-leap" name="lunar-leap" type="checkbox" /> 这一天在闰月</label>
+          </div>
+
+          <fieldset>
+            <legend>性别</legend>
+            <label><input type="radio" name="gender" value="男" /> 男</label>
+            <label><input type="radio" name="gender" value="女" /> 女</label>
+          </fieldset>
+
+          <label for="time-index">出生时辰</label>
+          <select id="time-index" name="time-index">
+            <option value="">请选择时辰</option>
+          </select>
+          <p id="time-hint" class="hint"></p>
+
+          <label class="check">
+            <input id="late-rat-same-day" name="late-rat-same-day" type="checkbox" />
+            晚子时仍算在当天（默认按次日排盘）
+          </label>
+
+          <p id="form-error" class="error" role="alert" tabindex="-1" hidden></p>
+          <div class="actions">
+            <button type="submit">生成命盘</button>
+            <button type="button" id="fill-example">填入示例并排盘</button>
+          </div>
+        </form>
+        <details class="rules">
+          <summary>时辰、闰月和本页做不到的事</summary>
+          <ul>
+            <li>时辰按钟表分段。早子时是 00:00–01:00，晚子时是 23:00–00:00，中间每个时辰两小时。</li>
+            <li>不支持真太阳时，也不按出生地经度、时区或夏令时换算。请直接选择你已经确定的钟表时辰。</li>
+            <li>默认晚子时与次日早子时使用同一套农历日期和星盘。勾选“仍算在当天”后，晚子时留在当日。</li>
+            <li>农历要选真实存在的月日。勾选闰月时，该年必须真有这个闰月，否则会提示，不会偷偷改成平月。</li>
+            <li>闰月十五及以前按本月安宫，十六起按下月，这是排盘库的默认做法。</li>
+            <li>出生资料只留在这台浏览器里。即使用 GitHub Pages 打开，服务器也只提供页面文件，不会收到日期、性别或时辰。</li>
+            <li>生成后的解读只根据这张盘的宫位和星曜作文化象征说明，不是预测。</li>
+          </ul>
+        </details>
+      </section>
+      <section id="result" class="result" aria-live="polite" hidden></section>
+    </main>
+    <footer class="foot">
+      <p>娱乐与学习用途。页面不声称算命有效，也不根据星盘预测健康、财运或决策。</p>
+      <p>排盘算法来自开源库 iztro（MIT）。计算在浏览器本地完成，出生资料不会被提交。</p>
+    </footer>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
