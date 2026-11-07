@@ -22,7 +22,7 @@ yarn install
 yarn dev
 ```
 
-终端会显示本地地址，一般是 `http://localhost:5173`。用电脑或手机浏览器打开即可。手机和电脑要在同一个网络时，可以用终端里 `Network` 那一行的地址。
+终端会显示本地地址。页面挂在 `/iztro/` 下面，请打开 `http://localhost:5173/iztro/`。手机和电脑要在同一个网络时，把终端里 `Network` 那一行的主机名加上 `/iztro/`。
 
 生成静态文件并用本地服务器查看：
 
@@ -31,7 +31,7 @@ yarn build
 yarn preview
 ```
 
-预览地址一般是 `http://localhost:4173`。不要直接双击 `dist/index.html`，浏览器会拦截这种打开方式下的脚本。
+预览地址是 `http://localhost:4173/iztro/`。不要直接双击 `dist/index.html`，浏览器会拦截这种打开方式下的脚本。
 
 ## 怎么填
 
@@ -62,4 +62,4 @@ yarn preview
 
 - 只排本命十二宫、主星、辅星、杂曜、命宫、身宫、四柱、五行局和大限岁数。没有流年批命，也没有飞星派、中州派切换。
 - 农历依赖库所使用的历表。页面不会另外发明一套历法。
-- 没有公网地址。要把页面给别人用，需要你自己有静态网站托管，并把 `yarn build` 得到的 `dist/` 放上去。本仓库没有配置部署。
+- 静态文件发布在 `gh-pages` 分支的根目录，来自 `yarn build` 的 `dist/`。项目站点路径是 `/iztro/`。这个分支没有 `CNAME`，也没有改 `main`。仓库的 Pages 来源要选 `gh-pages` 的 `/` 之后，公开地址才是 `https://novasqc.github.io/iztro/`。

@@ -6,7 +6,8 @@ const repoRoot = fileURLToPath(new URL('../..', import.meta.url));
 const libraryVersion = JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8')).version;
 
 export default defineConfig({
-  base: './',
+  // 项目站点固定在 https://<owner>.github.io/iztro/ ，资源必须带这个前缀。
+  base: '/iztro/',
   plugins: [
     {
       name: 'iztro-browser-version',
