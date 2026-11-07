@@ -19,6 +19,43 @@ import { validateDate, validateTimeIndex } from '../utils/validation';
 import { serialize } from '../utils/toJSON';
 import { normalizeDayBoundary } from '../utils/date';
 
+type LunarDayPoint = {
+  lunarYear?: number;
+  lunarMonth: number;
+  lunarDay: number;
+  isLeap: boolean;
+};
+
+/**
+ * 生日分界下，目标农历日是否已经晚于出生日。生日当天不加岁。
+ * 同一年里平月在前、闰月在后：平月生日进入闰月后视为已过；
+ * 闰月生日若该年仍有同名闰月，则平月内视为未过，避免虚岁先加后减。
+ * 目标年没有对应闰月时，仍按月、日数字比较。
+ *
+ * @internal
+ */
+const hasPassedLunarBirthday = (target: LunarDayPoint, birthday: LunarDayPoint): boolean => {
+  if (target.lunarMonth !== birthday.lunarMonth) {
+    return target.lunarMonth > birthday.lunarMonth;
+  }
+
+  if (target.isLeap !== birthday.isLeap) {
+    if (target.isLeap) {
+      return true;
+    }
+
+    if (
+      birthday.isLeap &&
+      target.lunarYear !== undefined &&
+      LunarYear.fromYear(target.lunarYear).getLeapMonth() === birthday.lunarMonth
+    ) {
+      return false;
+    }
+  }
+
+  return target.lunarDay > birthday.lunarDay;
+};
+
 /**
  * 获取运限数据
  *
@@ -61,10 +98,8 @@ const _getHoroscopeBySolarDate = (
     // 假如目标日期已经过了生日，则需要加1岁
     // 比如 2022年九月初一 出生的人，在出生后虚岁为 1 岁
     // 但在 2023年九月初二 以后，虚岁则为 2 岁
-    if (
-      _date.lunarMonth > _birthday.lunarMonth ||
-      (_date.lunarMonth === _birthday.lunarMonth && _date.lunarDay > _birthday.lunarDay)
-    ) {
+    // 闰月排在同名平月之后，不能只比月数和日数
+    if (hasPassedLunarBirthday(_date, _birthday)) {
       nominalAge += 1;
     }
   } else {
