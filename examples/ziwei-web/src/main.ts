@@ -1,6 +1,7 @@
 import './style.css';
 import { astro, data } from 'iztro';
 import { LunarYear } from 'lunar-typescript';
+import { buildReading, type ReadingStar } from './reading';
 
 type StarLike = { name: string; brightness?: string; mutagen?: string };
 type PalaceLike = {
@@ -159,6 +160,7 @@ const showTimeHint = (): void => {
 const showError = (message: string): void => {
   errorBox.hidden = false;
   errorBox.textContent = message;
+  resultBox.replaceChildren();
   resultBox.hidden = true;
   errorBox.focus();
 };
@@ -328,6 +330,48 @@ const createPalace = (palace: PalaceLike): HTMLElement => {
   return card;
 };
 
+const evidenceStarText = (star: ReadingStar): string => {
+  const brightness = star.brightness ? star.brightness : '';
+  const mutagen = star.mutagen ? `化${star.mutagen}` : '';
+  return `${star.name}${brightness}${mutagen}`;
+};
+
+const renderReading = (chart: ChartLike): HTMLElement => {
+  const reading = buildReading(chart);
+  const section = document.createElement('section');
+  section.id = 'reading';
+  section.className = 'reading';
+  const heading = document.createElement('h2');
+  heading.textContent = '传统命盘解读';
+  const note = document.createElement('p');
+  note.className = 'reading-note';
+  note.textContent = reading.notice;
+  section.append(heading, note);
+
+  reading.sections.forEach((item) => {
+    const card = document.createElement('article');
+    card.className = 'reading-card';
+    card.dataset.section = item.id;
+    const title = document.createElement('h3');
+    title.textContent = item.title;
+    const summary = document.createElement('p');
+    summary.className = 'reading-summary';
+    summary.textContent = item.summary;
+    card.append(title, summary);
+    const list = document.createElement('ul');
+    list.className = 'evidence';
+    item.evidence.forEach((entry) => {
+      const row = document.createElement('li');
+      const starText = entry.stars.length ? entry.stars.map(evidenceStarText).join('、') : '没有引用星曜';
+      row.textContent = `${entry.relation} · ${entry.palace}：${starText}`;
+      list.append(row);
+    });
+    card.append(list);
+    section.append(card);
+  });
+  return section;
+};
+
 const renderChart = (chart: ChartLike): void => {
   resultBox.replaceChildren();
   const timeIndex = Number(timeInput.value);
@@ -410,6 +454,7 @@ const renderChart = (chart: ChartLike): void => {
   copyright.className = 'copyright';
   copyright.textContent = chart.copyright;
   resultBox.append(copyright);
+  resultBox.append(renderReading(chart));
   resultBox.hidden = false;
   resultBox.scrollIntoView({ block: 'start' });
 };
